@@ -1,0 +1,79 @@
+div.outer {
+  display: flex;
+  justify-content: center;
+  flex-direction:column
+
+}
+div.inner{
+  background-color: rgb(203, 204, 204);
+  width: 40%;
+  border: solid black 2px;
+  border-radius: 3px;
+  margin-bottom: 5px;
+  align-self: center;
+}
+p {
+  margin-top: 0px;
+  color: black;
+}
+h1 {
+
+color: rgb(21, 100, 33);
+background-color: #ededed;
+margin-top: 0%;
+border-bottom: solid black 1px;
+}
+span {
+  float: right;
+ 
+  color: coral;
+  padding-right: 8px;
+
+}
+.Avatar {
+    float: left;
+    max-width: 45px;
+    max-height: 15px;
+    padding-top:2px;
+    padding-right: 3px;
+}
+ 
+/* accordion */
+.accordion {
+  background-color:  rgb(203, 204, 204);
+  color: #444;
+  border-top: solid 2px rgba(111, 104, 104, 0.45);
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  text-align: left;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+ 
+  
+}
+.accordion:after {
+  content: "\2B9F";
+  font-size: 13px;
+  color: #777;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2B9D"; 
+}
+.active, .accordion:hover {
+  background-color: #ccc;
+}
+
+.panel {
+  padding: 0 18px;
+  background-color:  rgb(203, 204, 204);
+  border-top: solid 2px rgba(111, 104, 104, 0.45);
+  display: none;
+  overflow: hidden;
+
+}
+

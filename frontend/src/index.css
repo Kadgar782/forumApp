@@ -1,0 +1,68 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+div#root {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction:column
+}
+div.outer {
+  display: flex;
+  justify-content: center;
+  flex-direction:column
+}
+div.inner{
+  background-color: rgb(203, 204, 204);
+  width: 40%;
+  border: solid black 2px;
+  border-radius: 3px;
+  margin-bottom: 5px;
+  align-self: center;
+}
+div.leftSidebar{
+  display: flex;
+  align-self: flex-start;
+  flex-direction: column;
+}
+p {
+  padding-left: 5px;
+  margin-top: 0px;
+  color: black;
+  font-size: 1.1rem;
+  word-wrap: break-word;
+}
+h5 {
+
+color: rgb(21, 100, 33);
+background-color: #ededed;
+font-weight: 300;
+margin-top: 0%;
+padding-left: 5px;
+border-bottom: solid black 1px;
+word-wrap: break-word;
+}
+span {
+  display: flex;
+  justify-content: left;
+  color: coral;
+  padding-right: 8px;
+  padding-left: 5px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+
+}
+
+blockquote{
+  margin: 0;
+}
+ 
+[contenteditable='true'] {
+  background-color: rgb(100, 96, 90);
+}
+
+.css-aov98l-MuiToolbar-root {
+  min-height: 54px;
+}
