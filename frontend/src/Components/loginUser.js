@@ -18,8 +18,8 @@ const style = {
 };
 
 export const LoginFields = ({
-  setThatToken,
-  setThatUser,
+  setToken,
+  setCurrentUser,
   modalStatusChange,
 }) => {
   const [tfHeaderValue, setTFHeaderValue] = useState("");
@@ -69,11 +69,10 @@ export const LoginFields = ({
       } 
         const data = await response.json();
         const token = data.token;
-        setThatToken(token.accessToken);
-        setThatUser(username);
+        setToken(token.accessToken);
+        setCurrentUser(username);
         localStorage.setItem("user", username);
         localStorage.setItem("token", token.accessToken)  
-        // document.cookie = `token=${token.accessToken}; max-age=1800; secure; SameSite=Lax; httpOnly`;   
         notify("success", username)
        } catch  (error) { 
         console.error(error);

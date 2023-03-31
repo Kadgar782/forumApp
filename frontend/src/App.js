@@ -8,7 +8,7 @@ import {
   Button,
   Modal,
 } from "@mui/material";
-import { createBrowserRouter, Routes, Route, Link } from "react-router-dom";
+import {  Routes, Route, Link } from "react-router-dom";
 import { PostFields } from "./Components/CreatePost.js";
 import { EditPostFields } from "./Components/editPost.js";
 import { PostSchema } from "./Components/PostBlueprint.js";
@@ -33,7 +33,8 @@ function App() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [registrationOpen, setRegistrationOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [token, setToken] = useState("");
+  // eslint-disable-next-line  no-unused-vars
+  const [token, setToken] = useState("");//taking a token from local storage is faster than from a  useState, but I still need a setToken
 
   //Getting Post content
   useEffect(() => {
@@ -192,10 +193,10 @@ function App() {
     localStorage.clear();
   };
 
-  //Set current User
-  const setTheUser = (username) => {
-    setCurrentUser(username);
-  };
+  // //Set current User
+  // const setTheUser = (username) => {
+  //   setCurrentUser(username);
+  // };
 
   //Сhanging a post with a specific id
   const updatePost = (updatedPost) => {
@@ -313,8 +314,8 @@ function App() {
           <Modal open={loginOpen} onClose={handleLoginModalToggle}>
             <LoginFields
               modalStatusChange={handleLoginModalToggle}
-              setThatUser={setTheUser}
-              setThatToken={setToken}
+              setCurrentUser={setCurrentUser}
+              setToken={setToken}
             />
           </Modal>
 

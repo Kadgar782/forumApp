@@ -68,7 +68,7 @@ class dataController {
             };
           }
         }
-      }); // whole function
+      }); 
 
       res.status(200).json({ data });
     } catch (error) {
