@@ -56,11 +56,13 @@ function App() {
 
       setComments(comments);
     };
+     
+    // We get posts with the ability to edit and delete them depending on the logged in user
 
     const getPostsAuth = async (bearerToken) => {
       const response = await fetch("http://localhost:5001/api/data", {
         headers: {
-          Authorization: `Bearer ${bearerToken}`, // передаем токен в заголовке
+          Authorization: `Bearer ${bearerToken}`, //passing token in header
         },
       });
       const post = await response.json();
@@ -83,8 +85,10 @@ function App() {
     getPostsAuth(localToken)
       .then(() => getComments())
       .then(() => setIsLoading(false));
-  }, [currentUser]);
+  }, [currentUser]); 
 
+  // Checking the access token for expiration date. 
+  // Due to the fact that the token  is updated during the second check, unnecessary error notification is triggered, i must somehow avoid this
   useEffect(() => {
     if (localStorage.getItem("token")) {
       const checkAuth = async () => {
@@ -104,7 +108,7 @@ function App() {
     }
   }, []);
 
-  //Notify
+  // Notify
   const notify = (status) => {
     switch (status) {
       case "success":
@@ -193,11 +197,6 @@ function App() {
     localStorage.clear();
   };
 
-  // //Set current User
-  // const setTheUser = (username) => {
-  //   setCurrentUser(username);
-  // };
-
   //Сhanging a post with a specific id
   const updatePost = (updatedPost) => {
     setMappedPosts(
@@ -253,6 +252,9 @@ function App() {
                   component="div"
                   sx={{ flexGrow: 1 }}
                 ></Typography>
+
+               {/*we check whether the user is authorized and, depending on this, we return the necessary buttons*/}
+
                 {currentUser === "" ? null : (
                   <Button color="inherit" component={Link} to="/editor">
                     Create new post
@@ -278,6 +280,9 @@ function App() {
               </Toolbar>
             </AppBar>
           </Box>
+
+           {/*here we define paths for pages. In this project I have only two pages, the main page and the editor for creating posts. 
+           I was planning to add more features to the editor*/}
 
           <Routes>
             <Route
@@ -311,6 +316,9 @@ function App() {
             />
           </Routes>
 
+        {/* Modal windows for logging in, registering and editing posts.
+         It would be better to replace the modal post editing window with a page with an editor when I'll add more functionality to it. */}
+
           <Modal open={loginOpen} onClose={handleLoginModalToggle}>
             <LoginFields
               modalStatusChange={handleLoginModalToggle}
@@ -337,6 +345,7 @@ function App() {
               updatePost={updatePost}
             />
           </Modal>
+          {/* Notify */}
           <div>
             <ToastContainer />
           </div>
