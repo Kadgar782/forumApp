@@ -3,7 +3,7 @@ import { CommentSchema } from "./CommentBlueprint";
 import { Divider } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import React, { createContext, useContext } from "react";
+import React, { createContext,  } from "react";
 //Context
 
 export const postContext = createContext("without provider");
@@ -32,7 +32,7 @@ export const PostSchema = ({
 
     if (presentUser === "")
       return (
-        <postContext.Provider value={post._id}>
+        <postContext.Provider  key={post._id} value={post._id}>
           <div className="inner" key={post._id}>
             <Typography variant="h5">{post.title}</Typography>
             
@@ -66,7 +66,7 @@ export const PostSchema = ({
     // If the user is an admin or the author of current post
     else if (post.controls === true || post.username === presentUser)
       return (
-        <postContext.Provider value={post._id}>
+        <postContext.Provider  key={post._id} value={post._id}>
           <div className="inner" key={post._id}>
             <Typography variant="h5">
               {post.title}
@@ -118,7 +118,7 @@ export const PostSchema = ({
     // if the user is not an admin and not the author of the post
     else
       return (
-        <postContext.Provider value={post._id}>
+        <postContext.Provider  key={post._id} value={post._id}>
           <div className="inner" key={post._id}>
             <Typography variant="h5">{post.title}</Typography>
             <p>{post.body}</p>

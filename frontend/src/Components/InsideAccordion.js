@@ -14,6 +14,7 @@ export const InsideAccordion = ({ arrayWithCommentsForPost, setMappedComments,up
       const {_id, body, postId} = commentStuff
       return (
         <Comment
+          key={_id}
           postControls={postControls}
           loggedInUser={loggedInUser}
           commentId={_id}

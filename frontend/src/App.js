@@ -297,6 +297,7 @@ function App() {
             <Route
               path="/"
               element={
+                // we are waiting for data from the backend
                 isLoading ? (
                   <div>IS loading...</div>
                 ) : (
