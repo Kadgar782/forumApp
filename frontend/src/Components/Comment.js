@@ -9,14 +9,13 @@ import { Divider } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Textarea from "@mui/joy/Textarea";
-import React, { useState, useContext, createContext } from "react";
+import React, { useState, useContext,  } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { CommentContext } from "../App.js";
 import "react-toastify/dist/ReactToastify.css";
 
 export function Comment({
   updateComment,
-  setMappedComments,
   arrayWithCommentsForPost,
   commentId,
   commentBody,
@@ -33,6 +32,7 @@ export function Comment({
   const [isEditable, setIsEditable] = useState(false);
   const [body, setBody] = useState(comment.body);
 
+ // Comment data
   const username = comment.username;
   const thumbnailUrl = "https://via.placeholder.com/150/54176f";
   const _id = commentId;
@@ -58,7 +58,7 @@ export function Comment({
   const turnEditMode = () => {
     setIsEditable(!isEditable);
   };
-
+ // Delete comment
   const removeElement = async (_id) => {
     try {
       const response = await fetch(
@@ -81,7 +81,7 @@ export function Comment({
     }
   };
 
-  //Function for button
+  //Function for edit button
   const handleSubmit = async (_id) => {
     // make request to backend
     try {
@@ -111,6 +111,7 @@ export function Comment({
     //Return if user is admin or author of comment
     return (
       <AccordionDetails
+        key={_id}
         sx={{
           padding: 0,
           backgroundColor: "#cbcccc",
@@ -173,6 +174,7 @@ export function Comment({
     //Return if user is not admin or author
     return (
       <AccordionDetails
+        key={_id}
         sx={{
           padding: 0,
           backgroundColor: "#cbcccc",
@@ -191,23 +193,7 @@ export function Comment({
           />
           {username}
         </span>
-        {isEditable ? ( //true
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Textarea
-              size="md"
-              className="inputField"
-              value={body}
-              onChange={(newValue) => setBody(newValue.target.value)}
-            >
-              {" "}
-            </Textarea>
-            <Button onClick={() => handleSubmit(_id)}>Done</Button>
-            <Button>Cancel</Button>
-          </div>
-        ) : (
           <Typography id={_id}> {commentBody}</Typography>
-        )}
-
         <Divider sx={{ border: 1 }} />
       </AccordionDetails>
     );

@@ -25,7 +25,7 @@ export const LoginFields = ({
   const [tfHeaderValue, setTFHeaderValue] = useState("");
   const [tfContentValue, setTFContentValue] = useState("");
 
-  // Function for button
+  // Function for button to login
   const loginUser =  async (upperValue, loverValue) => {
     const username = upperValue;
     const password = loverValue;
@@ -45,7 +45,7 @@ export const LoginFields = ({
           toast.success(`you have successfully logged in as ${username}`);
           break;
         case "error":
-          toast.error("Something went wrong");
+          toast.error("Something went wrong during login");
           break;
         default:
           break;
@@ -67,6 +67,7 @@ export const LoginFields = ({
         notify("error", "")
         throw new Error("Server responds with error!");   
       } 
+      // The received tokens from the login are stored in cookies and local storage
         const data = await response.json();
         const token = data.token;
         setToken(token.accessToken);

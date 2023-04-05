@@ -283,7 +283,6 @@ function App() {
 
            {/*here we define paths for pages. In this project I have only two pages, the main page and the editor for creating posts. 
            I was planning to add more features to the editor*/}
-
           <Routes>
             <Route
               path="/editor"

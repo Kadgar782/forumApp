@@ -30,6 +30,7 @@ export const CommentSchema = ({
   )
     return (
       <CommentFields
+        key={postId}
         _id={postId}
         userName={username}
         addingToArray={addingComments}
@@ -45,7 +46,7 @@ export const CommentSchema = ({
         userIsLogged={loggedInUser}
         arrayWithCommentsForPost={arrayWithCommentsForPost}
         setMappedComments={setMappedComments}
-        MuiAddingComments={addingComments}
+        addingComments={addingComments}
       />
     );
 };

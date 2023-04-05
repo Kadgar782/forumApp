@@ -21,7 +21,7 @@ export const CommentFields = ({addingToArray,userName,_id}) => {
   const [tfContentValue, setTFContentValue] = useState("");
 
 
-  // Function for button
+  // Function for button to create new comment
   const createNewComment = ( loverValue) => {
     const username = userName;
     const body = loverValue;
@@ -37,7 +37,6 @@ export const CommentFields = ({addingToArray,userName,_id}) => {
 
     // make request to backend
 
-   
       fetch("http://localhost:5001/api/comments", {
         method: 'POST',
         headers: {
@@ -52,8 +51,6 @@ export const CommentFields = ({addingToArray,userName,_id}) => {
       .catch(error => {
         console.error(error);
       });
-
-
   }
   
   //Modal content
@@ -72,7 +69,7 @@ export const CommentFields = ({addingToArray,userName,_id}) => {
       ></TextField>
       <Button
         disabled={
-          !tfContentValue.replace(/\s/g, "").length
+          !tfContentValue.replace(/\s/g, "").length // button is inactive if the comment field is empty
         }
         component={Link}
         to="/"

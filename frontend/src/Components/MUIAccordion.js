@@ -1,12 +1,9 @@
 import {
   Accordion,
   AccordionSummary,
-  AccordionDetails,
   Typography,
-  Divider,
-  Avatar,
 } from "@mui/material";
-import { InsideAccordion } from "./ContentOfAccordion";
+import { InsideAccordion } from "./InsideAccordion";
 import { CommentFields } from "./commentEditor";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useContext } from "react";
@@ -15,7 +12,7 @@ import { userContext } from "../App.js";
 
 export const MuiAccordion = ({
   updateComment,
-  MuiAddingComments,
+  addingComments,
   arrayWithCommentsForPost,
   userIsLogged,
   setMappedComments,
@@ -24,10 +21,14 @@ export const MuiAccordion = ({
 }) => {
   const postId = useContext(postContext);
   const username = useContext(userContext);
+  const halfPostId = postId.slice(postId.length / 2)
+  const quarterId = postId.slice(halfPostId.length / 2)
+  // User is not logged in
   if (userIsLogged === "")
     return (
       <Accordion>
-        <AccordionSummary
+        <AccordionSummary          // This will be only 1 in post 
+          key={postId}
           expandIcon={<ExpandMoreIcon />}
           sx={{
             backgroundColor: "#cbcccc",
@@ -37,6 +38,7 @@ export const MuiAccordion = ({
           <Typography>Comments</Typography>
         </AccordionSummary>
         <InsideAccordion
+          key={halfPostId}
           loggedInUser={loggedInUser}
           arrayWithCommentsForPost={arrayWithCommentsForPost}
           setMappedComments={setMappedComments}
@@ -45,9 +47,11 @@ export const MuiAccordion = ({
       </Accordion>
     );
   else
+  // User is logged in
     return (
       <Accordion>
-        <AccordionSummary
+        <AccordionSummary              // This will be only 1 in post 
+          key={postId}
           expandIcon={<ExpandMoreIcon />}
           sx={{
             backgroundColor: "#cbcccc",
@@ -57,11 +61,13 @@ export const MuiAccordion = ({
           <Typography>Comments</Typography>
         </AccordionSummary>
         <CommentFields
+          key={quarterId}
           _id={postId}
           userName={username}
-          addingToArray={MuiAddingComments}
+          addingToArray={addingComments}
         />
         <InsideAccordion
+          key={halfPostId}
           loggedInUser={loggedInUser}
           arrayWithCommentsForPost={arrayWithCommentsForPost}
           setMappedComments={setMappedComments}

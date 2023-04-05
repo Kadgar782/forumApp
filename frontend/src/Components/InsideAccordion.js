@@ -1,4 +1,4 @@
-import { AccordionDetails, Typography, Avatar, IconButton } from "@mui/material";
+import { AccordionDetails, } from "@mui/material";
 import React from "react";
 import { Comment } from "./Comment";
 
