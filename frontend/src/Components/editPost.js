@@ -1,7 +1,7 @@
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,12 +17,12 @@ const style = {
   p: 4,
 };
 
-export const EditPostFields = ({
+export const EditPostFields = forwardRef(({
   specificId,
   allPosts,
   updatePost,
   modalStatusChange,
-}) => {
+},ref) => {
   let thePost = allPosts.find((post) => post._id === specificId);
 
   const [title, setTitle] = useState(thePost.title);
@@ -81,8 +81,10 @@ export const EditPostFields = ({
   //Modal content
 
   return (
-    <Box sx={style}>
+    // we have two fields for topic and content of post
+    <Box sx={style}  ref={ref}>
       <TextField
+        autoFocus
         label="the topic of the post"
         value={title}
         multiline={true}
@@ -103,6 +105,7 @@ export const EditPostFields = ({
       ></TextField>
       <Button
         disabled={
+          // User can't leave fields empty
           !title.replace(/\s/g, "").length || !body.replace(/\s/g, "").length
         }
         onClick={() => handleSubmit()}
@@ -114,4 +117,4 @@ export const EditPostFields = ({
         </div>
     </Box>
   );
-};
+});

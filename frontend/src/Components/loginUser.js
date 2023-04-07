@@ -1,7 +1,7 @@
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,11 +17,12 @@ const style = {
   p: 4,
 };
 
-export const LoginFields = ({
+
+export const LoginFields =  forwardRef(({
   setToken,
   setCurrentUser,
   modalStatusChange,
-}) => {
+}, ref) => {
   const [tfHeaderValue, setTFHeaderValue] = useState("");
   const [tfContentValue, setTFContentValue] = useState("");
 
@@ -86,8 +87,9 @@ export const LoginFields = ({
   //Modal content
 
   return (
-    <Box sx={style}>
+    <Box sx={style} ref={ref}>
       <TextField
+        autoFocus
         label="Username"
         value={tfHeaderValue}
         multiline={true}
@@ -120,4 +122,4 @@ export const LoginFields = ({
         </div>
     </Box>
   );
-};
+});

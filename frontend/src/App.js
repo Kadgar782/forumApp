@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from "react";
+import React, { useState, useEffect, createContext, useRef } from "react";
 import {
   Box,
   IconButton,
@@ -99,6 +99,9 @@ function App() {
           });
           const responseJSON = await response.json();
           localStorage.setItem("token", responseJSON.accessToken);
+          if (response.status >= 400) {
+            throw new Error("Server responds with error!");
+          }
         } catch (error) {
           console.log(error);
           notify("error");
@@ -107,6 +110,9 @@ function App() {
       checkAuth();
     }
   }, []);
+  
+  //Refs
+  const loginFieldsRef = useRef(null);
 
   // Notify
   const notify = (status) => {
@@ -321,6 +327,7 @@ function App() {
 
           <Modal open={loginOpen} onClose={handleLoginModalToggle}>
             <LoginFields
+              ref={loginFieldsRef} 
               modalStatusChange={handleLoginModalToggle}
               setCurrentUser={setCurrentUser}
               setToken={setToken}
