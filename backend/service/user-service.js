@@ -16,7 +16,7 @@ async refresh(refreshToken ) {
     if (!refreshToken) {
       throw ApiError.UnauthorizedError();
   }
-      const userData = tokenService.validateRefreshToken(refreshToken);// id and roles, on second refresh return { id: '6', roles: '3', iat: 1679050853, exp: 1681642853 }
+      const userData = tokenService.validateRefreshToken(refreshToken);// id and roles
       const tokenFromDb = await tokenService.findToken(refreshToken);//  _id, user ObjectId and refreshToken
 
       if (!userData || !tokenFromDb) {

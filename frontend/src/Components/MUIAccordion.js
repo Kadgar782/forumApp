@@ -6,9 +6,10 @@ import {
 import { InsideAccordion } from "./InsideAccordion";
 import { CommentFields } from "./commentEditor";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import React, { useContext } from "react";
+import React, { useContext, useState  } from "react";
 import { postContext } from "./PostBlueprint";
 import { userContext } from "../App.js";
+
 
 export const MuiAccordion = ({
   updateComment,
@@ -19,15 +20,20 @@ export const MuiAccordion = ({
   loggedInUser,
   postControls,
 }) => {
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen)
+  }
+
   const postId = useContext(postContext);
   const username = useContext(userContext);
-  const halfPostId = postId.slice(postId.length / 2)
-  const quarterId = postId.slice(halfPostId.length / 2)
   // User is not logged in
   if (userIsLogged === "")
     return (
       <Accordion>
-        <AccordionSummary          // This will be only 1 in post 
+        <AccordionSummary         
           key={postId}
           expandIcon={<ExpandMoreIcon />}
           sx={{
@@ -38,7 +44,6 @@ export const MuiAccordion = ({
           <Typography>Comments</Typography>
         </AccordionSummary>
         <InsideAccordion
-          key={halfPostId}
           loggedInUser={loggedInUser}
           arrayWithCommentsForPost={arrayWithCommentsForPost}
           setMappedComments={setMappedComments}
@@ -49,8 +54,8 @@ export const MuiAccordion = ({
   else
   // User is logged in
     return (
-      <Accordion>
-        <AccordionSummary              // This will be only 1 in post 
+      <Accordion expanded= {isOpen} onChange={handleToggle}>
+        <AccordionSummary            
           key={postId}
           expandIcon={<ExpandMoreIcon />}
           sx={{
@@ -61,13 +66,12 @@ export const MuiAccordion = ({
           <Typography>Comments</Typography>
         </AccordionSummary>
         <CommentFields
-          key={quarterId}
           _id={postId}
           userName={username}
           addingToArray={addingComments}
         />
         <InsideAccordion
-          key={halfPostId}
+          accordionState={isOpen}
           loggedInUser={loggedInUser}
           arrayWithCommentsForPost={arrayWithCommentsForPost}
           setMappedComments={setMappedComments}

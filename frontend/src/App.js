@@ -8,7 +8,7 @@ import {
   Button,
   Modal,
 } from "@mui/material";
-import {  Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import { PostFields } from "./Components/CreatePost.js";
 import { EditPostFields } from "./Components/editPost.js";
 import { PostSchema } from "./Components/PostBlueprint.js";
@@ -16,6 +16,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { LoginFields } from "./Components/loginUser.js";
 import { RegistrationFields } from "./Components/registrationFields.js";
 import { ToastContainer, toast } from "react-toastify";
+import fetchIntercept from "fetch-intercept";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
@@ -34,7 +35,7 @@ function App() {
   const [registrationOpen, setRegistrationOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   // eslint-disable-next-line  no-unused-vars
-  const [token, setToken] = useState("");//taking a token from local storage is faster than from a  useState, but I still need a setToken
+  const [token, setToken] = useState(""); //taking a token from local storage is faster than from a  useState, but I still need a setToken
 
   //Getting Post content
   useEffect(() => {
@@ -56,7 +57,7 @@ function App() {
 
       setComments(comments);
     };
-     
+
     // We get posts with the ability to edit and delete them depending on the logged in user
 
     const getPostsAuth = async (bearerToken) => {
@@ -85,14 +86,30 @@ function App() {
     getPostsAuth(localToken)
       .then(() => getComments())
       .then(() => setIsLoading(false));
-  }, [currentUser]); 
+  }, [currentUser]);
 
-  // Checking the access token for expiration date. 
-  // Due to the fact that the token  is updated during the second check, unnecessary error notification is triggered, i must somehow avoid this
+  // Checking the access token for expiration date.
+  // Due to the fact that the token  is updated during the second check, unnecessary error notification is triggered,
+  // most likely the response interceptor solved this problem
   useEffect(() => {
+    let retries = 0;
+
     if (localStorage.getItem("token")) {
       const checkAuth = async () => {
         try {
+          // I use an interceptor so that it returns the already changed access and refresh tokens
+          const unregister = fetchIntercept.register({
+            response: function (response) {
+              if (response.status === 401 && retries < 3) {
+            // if the status of an unauthorized user is returned more than three times, either the user is really not authorized, or the problem ist with server     
+                retries++;
+                return fetch(response.url, {
+                  credentials: "include",
+                });
+              }
+              return response;
+            },
+          });
           const response = await fetch("http://localhost:5001/auth/refresh", {
             method: "GET",
             credentials: "include",
@@ -102,6 +119,8 @@ function App() {
           if (response.status >= 400) {
             throw new Error("Server responds with error!");
           }
+          unregister();
+          //unregister is used to stop using the interceptor
         } catch (error) {
           console.log(error);
           notify("error");
@@ -110,7 +129,7 @@ function App() {
       checkAuth();
     }
   }, []);
-  
+
   //Refs
   const loginFieldsRef = useRef(null);
 
@@ -159,7 +178,6 @@ function App() {
     const newPosts = mappedPosts.filter(
       (mappedPosts) => mappedPosts._id !== _id
     );
-
 
     setMappedPosts(newPosts);
   };
@@ -251,7 +269,7 @@ function App() {
                   sx={{ mr: 2 }}
                 >
                   <MenuIcon />
-                      ZAP
+                  ZAP
                 </IconButton>
                 <Typography
                   variant="h6"
@@ -259,7 +277,7 @@ function App() {
                   sx={{ flexGrow: 1 }}
                 ></Typography>
 
-               {/*we check whether the user is authorized and, depending on this, we return the necessary buttons*/}
+                {/*we check whether the user is authorized and, depending on this, we return the necessary buttons*/}
 
                 {currentUser === "" ? null : (
                   <Button color="inherit" component={Link} to="/editor">
@@ -287,7 +305,7 @@ function App() {
             </AppBar>
           </Box>
 
-           {/*here we define paths for pages. In this project I have only two pages, the main page and the editor for creating posts. 
+          {/*here we define paths for pages. In this project I have only two pages, the main page and the editor for creating posts. 
            I was planning to add more features to the editor*/}
           <Routes>
             <Route
@@ -322,12 +340,12 @@ function App() {
             />
           </Routes>
 
-        {/* Modal windows for logging in, registering and editing posts.
+          {/* Modal windows for logging in, registering and editing posts.
          It would be better to replace the modal post editing window with a page with an editor when I'll add more functionality to it. */}
 
           <Modal open={loginOpen} onClose={handleLoginModalToggle}>
             <LoginFields
-              ref={loginFieldsRef} 
+              ref={loginFieldsRef}
               modalStatusChange={handleLoginModalToggle}
               setCurrentUser={setCurrentUser}
               setToken={setToken}
