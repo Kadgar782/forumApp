@@ -16,7 +16,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { LoginFields } from "./Components/loginUser.js";
 import { RegistrationFields } from "./Components/registrationFields.js";
 import { ToastContainer, toast } from "react-toastify";
-import fetchIntercept from "fetch-intercept";
+import interceptor  from "./http/interceptor.js"
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
@@ -60,13 +60,14 @@ function App() {
 
     // We get posts with the ability to edit and delete them depending on the logged in user
 
-    const getPostsAuth = async (bearerToken) => {
-      const response = await fetch("http://localhost:5001/api/data", {
-        headers: {
-          Authorization: `Bearer ${bearerToken}`, //passing token in header
-        },
-      });
-      const post = await response.json();
+    const getPostsAuth = async () => {
+
+    // In this custom axios request, we pass a token by which we receive all the data with posts,
+    // if the access token has expired, then an attempt is being made to update it with a refresh token,
+    // but if it has expired, the user's log out will occur.
+      const response = await interceptor.get("api/data")
+      const post = await response.data;
+      console.log(post)
       const revPost = post.data.reverse();
       setMappedPosts(revPost);
     };
@@ -87,48 +88,6 @@ function App() {
       .then(() => getComments())
       .then(() => setIsLoading(false));
   }, [currentUser]);
-
-  // Checking the access token for expiration date.
-  // Due to the fact that the token  is updated during the second check, unnecessary error notification is triggered,
-  // most likely the response interceptor solved this problem
-  useEffect(() => {
-    let retries = 0;
-
-    if (localStorage.getItem("token")) {
-      const checkAuth = async () => {
-        try {
-          // I use an interceptor so that it returns the already changed access and refresh tokens
-          const unregister = fetchIntercept.register({
-            response: function (response) {
-              if (response.status === 401 && retries < 3) {
-            // if the status of an unauthorized user is returned more than three times, either the user is really not authorized, or the problem ist with server     
-                retries++;
-                return fetch(response.url, {
-                  credentials: "include",
-                });
-              }
-              return response;
-            },
-          });
-          const response = await fetch("http://localhost:5001/auth/refresh", {
-            method: "GET",
-            credentials: "include",
-          });
-          const responseJSON = await response.json();
-          localStorage.setItem("token", responseJSON.accessToken);
-          if (response.status >= 400) {
-            throw new Error("Server responds with error!");
-          }
-          unregister();
-          //unregister is used to stop using the interceptor
-        } catch (error) {
-          console.log(error);
-          notify("error");
-        }
-      };
-      checkAuth();
-    }
-  }, []);
 
   //Refs
   const loginFieldsRef = useRef(null);
