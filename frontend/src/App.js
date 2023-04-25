@@ -16,7 +16,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { LoginFields } from "./Components/loginUser.js";
 import { RegistrationFields } from "./Components/registrationFields.js";
 import { ToastContainer, toast } from "react-toastify";
-import interceptor  from "./http/interceptor.js"
+import { logOut } from "./Components/authentication/authFunctions.js";
+import  Interceptor  from "./http/interceptor.js";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
@@ -59,15 +60,14 @@ function App() {
     };
 
     // We get posts with the ability to edit and delete them depending on the logged in user
-
     const getPostsAuth = async () => {
-
-    // In this custom axios request, we pass a token by which we receive all the data with posts,
-    // if the access token has expired, then an attempt is being made to update it with a refresh token,
-    // but if it has expired, the user's log out will occur.
-      const response = await interceptor.get("api/data")
+      
+      const interceptor = new Interceptor(setCurrentUser, notify);
+      // In this custom axios request, we pass a token by which we receive all the data with posts,
+      // if the access token has expired, then an attempt is being made to update it with a refresh token,
+      // but if it has expired, the user's log out will occur.
+      const response = await interceptor.get("api/data");
       const post = await response.data;
-      console.log(post)
       const revPost = post.data.reverse();
       setMappedPosts(revPost);
     };
@@ -158,28 +158,6 @@ function App() {
     handleEditableModalToggle();
   };
 
-  //Logging out and clearing the local storage
-  const logOut = async () => {
-    try {
-      const response = await fetch("http://localhost:5001/auth/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.status >= 400) {
-        notify("error", "");
-        throw new Error("Server responds with error!");
-      }
-    } catch (error) {
-      console.error(error);
-      notify("error");
-    }
-    setCurrentUser("");
-    localStorage.clear();
-  };
-
   //Сhanging a post with a specific id
   const updatePost = (updatedPost) => {
     setMappedPosts(
@@ -213,7 +191,7 @@ function App() {
   // Creating Post with JSX
   return (
     <CommentContext.Provider value={[comments, setComments]}>
-      <userContext.Provider value={currentUser}>
+      <userContext.Provider value={{ currentUser, setCurrentUser }}>
         <div className="outer">
           <Box sx={{ flexGrow: 1, mb: 1 }}>
             <AppBar position="static">
@@ -248,7 +226,10 @@ function App() {
                     Login
                   </Button>
                 ) : (
-                  <Button color="inherit" onClick={logOut}>
+                  <Button
+                    color="inherit"
+                    onClick={() => logOut(setCurrentUser, notify)}
+                  >
                     Log out
                   </Button>
                 )}

@@ -14,7 +14,7 @@ export const CommentSchema = ({
 }) => {
 
   const postId = useContext(postContext);
-  const username = useContext(userContext);
+  const { currentUser }  = useContext(userContext);
 
   // We only return post if it has no comments and is watched by an unauthorized person
 
@@ -32,7 +32,7 @@ export const CommentSchema = ({
       <CommentFields
         key={postId}
         _id={postId}
-        userName={username}
+        userName={ currentUser }
         addingToArray={addingComments}
       />
     );

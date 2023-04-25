@@ -28,7 +28,7 @@ export const MuiAccordion = ({
   }
 
   const postId = useContext(postContext);
-  const username = useContext(userContext);
+  const { currentUser } = useContext(userContext);
   // User is not logged in
   if (userIsLogged === "")
     return (
@@ -67,7 +67,7 @@ export const MuiAccordion = ({
         </AccordionSummary>
         <CommentFields
           _id={postId}
-          userName={username}
+          userName={currentUser }
           addingToArray={addingComments}
         />
         <InsideAccordion

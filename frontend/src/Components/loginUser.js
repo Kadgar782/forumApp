@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import React, { useState, forwardRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { login } from "./authentication/authFunctions";
 
 const style = {
   position: "absolute",
@@ -53,34 +54,8 @@ export const LoginFields =  forwardRef(({
       }
     };
 
-
     // make request to backend
-      try {
-         const response = await fetch("http://localhost:5001/auth/login", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(allData),
-      });
-      if (response.status >= 400) {
-        notify("error", "")
-        throw new Error("Server responds with error!");   
-      } 
-      // The received tokens from the login are stored in cookies and local storage
-        const data = await response.json();
-        const token = data.token;
-        setToken(token.accessToken);
-        setCurrentUser(username);
-        localStorage.setItem("user", username);
-        localStorage.setItem("token", token.accessToken)  
-        notify("success", username)
-       } catch  (error) { 
-        console.error(error);
-        notify("error");
-        }
-    modalStatusChange();
+    login(setToken, setCurrentUser, modalStatusChange, allData, username, notify)   
   };
   
 
