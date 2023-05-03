@@ -1,5 +1,5 @@
 import { Typography, Avatar, IconButton } from "@mui/material";
-import { CommentSchema } from "./CommentBlueprint";
+import { MuiAccordion } from "./MUIAccordion";
 import { Divider } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -10,7 +10,7 @@ export const postContext = createContext("without provider");
 
 export const PostSchema = ({
   updateComment,
-  presentUser,
+  currentUser,
   functionForAddingComments,
   mainArrayWithComments,
   arrayWithPosts,
@@ -27,10 +27,9 @@ export const PostSchema = ({
       );
       return reqComments;
     };
-
     //If the user is not logged in, he cannot create new posts or write comments
 
-    if (presentUser === "")
+    if (currentUser === "")
       return (
         <postContext.Provider  key={post._id} value={post._id}>
           <div className="inner" key={post._id}>
@@ -52,19 +51,18 @@ export const PostSchema = ({
               {post.username}
             </span>
             <Divider sx={{ border: 1 }} />
-            <CommentSchema
+             <MuiAccordion
               postControls={post.controls}
               updateComment={updateComment}
               arrayWithCommentsForPost={filterComments(mainArrayWithComments, post)}
-              addingComments={functionForAddingComments}
-              loggedInUser={presentUser}
               setMappedComments={setMappedComments}
-            />
+              addingComments={functionForAddingComments}
+              />
           </div>
         </postContext.Provider>
       );
     // If the user is an admin or the author of current post
-    else if (post.controls === true || post.username === presentUser)
+    else if (post.controls === true || post.username === currentUser)
       return (
         <postContext.Provider  key={post._id} value={post._id}>
           <div className="inner" key={post._id}>
@@ -104,14 +102,13 @@ export const PostSchema = ({
               {post.username}
             </span>
             <Divider sx={{ border: 1 }} />
-            <CommentSchema
+            <MuiAccordion
               postControls={post.controls}
               updateComment={updateComment}
               arrayWithCommentsForPost={filterComments(mainArrayWithComments, post)}
-              addingComments={functionForAddingComments}
-              loggedInUser={presentUser}
               setMappedComments={setMappedComments}
-            />
+              addingComments={functionForAddingComments}
+              />
           </div>
         </postContext.Provider>
       );
@@ -137,14 +134,13 @@ export const PostSchema = ({
               {post.username}
             </span>
             <Divider sx={{ border: 1 }} />
-            <CommentSchema
+            <MuiAccordion
               postControls={post.controls}
               updateComment={updateComment}
               arrayWithCommentsForPost={filterComments(mainArrayWithComments, post)}
-              addingComments={functionForAddingComments}
-              loggedInUser={presentUser}
               setMappedComments={setMappedComments}
-            />
+              addingComments={functionForAddingComments}
+              />
           </div>
         </postContext.Provider>
       );

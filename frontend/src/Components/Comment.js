@@ -20,7 +20,7 @@ export function Comment({
   commentId,
   commentBody,
   postId,
-  loggedInUser,
+  currentUser,
   postControls,
 }) {
   const [comments, setComments] = useContext(CommentContext);
@@ -107,7 +107,7 @@ export function Comment({
     }
   };
 
-  if (postControls === true || username === loggedInUser) {
+  if (postControls === true || username === currentUser) {
     //Return if user is admin or author of comment
     return (
       <AccordionDetails

@@ -15,23 +15,26 @@ class dataController {
           (u) => u.postId === p._id.toString()
         );
         const controls = false;
+        const hasComments = arrayForComments.length > 0;
         if (req.headers.authorization === "Bearer" || req.headers.authorization === "Bearer null" ) {
-          //without roles
+          //without roles and comments 
           if (!arrayForComments) {
             const commentsInPost = [];
             return {
               ...p,
               commentsInPost,
+              hasComments,
               controls,
             };
-          } else {
+          } else {// has some comments 
             const commentsInPost = arrayForComments;
             return {
               ...p,
               commentsInPost,
+              hasComments,
               controls,
             };
-          }
+          }//this is where the options for an unauthorized user end
         } else {
           //have roles
           const adminRole = req.user.roles.find((role) => role === "ADMIN");
@@ -43,27 +46,33 @@ class dataController {
               return {
                 ...p,
                 commentsInPost,
+                hasComments,
                 controls,
               };
             }
+            //else user is not admin and controls = false
             return {
               ...p,
               commentsInPost,
+              hasComments,
               controls,
             };
-          } else {
+          } else { // with comments 
             const commentsInPost = arrayForComments;
+            // without next if admin can't edit others posts
             if (adminRole === "ADMIN") {
               const controls = true;
               return {
                 ...p,
                 commentsInPost,
+                hasComments,
                 controls,
               };
             }
             return {
               ...p,
               commentsInPost,
+              hasComments,
               controls,
             };
           }

@@ -52,7 +52,7 @@ function App() {
     };
     //Getting Comments
     const getComments = async () => {
-      const resComments = await fetchData("http://localhost:5001/api/comments");
+      const resComments = await fetchData("http://localhost:5001/api/comments"); // наверно стоит это убрать, ведь я их буду брать отдельно к каждому посту
 
       const comments = resComments.result;
 
@@ -69,6 +69,7 @@ function App() {
       const response = await interceptor.get("api/data");
       const post = await response.data;
       const revPost = post.data.reverse();
+      console.log(revPost)
       setMappedPosts(revPost);
     };
 
@@ -267,7 +268,7 @@ function App() {
                 ) : (
                   <PostSchema
                     updateComment={updateComment}
-                    presentUser={currentUser}
+                    currentUser={currentUser}
                     mainArrayWithComments={comments}
                     functionForAddingComments={addingToComments}
                     arrayWithPosts={mappedPosts}

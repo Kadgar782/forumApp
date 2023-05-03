@@ -5,7 +5,7 @@ class commentController {
  getComments = ((req, res) => {
     Comment.find({})
         .then(result => res.status(200).json({ result }))
-        .catch(error => res.status(404).json({msg: error}))
+        .catch(error => res.status(404).json({msg: 'Comments not found'}))
 })
 
  getComment = ((req, res) => {
@@ -13,6 +13,12 @@ class commentController {
         .then(result => res.status(200).json({ result }))
         .catch(() => res.status(404).json({msg: 'Comment not found'}))
 })
+
+ getCommentsForPost = ((req, res) =>{
+  Comment.find({ postId: req.params.postId })
+  .then(result => res.status(200).json({ result }))
+  .catch(() => res.status(404).json({msg: 'Comment not found'}))
+ })
 
  createComment = ((req, res) => {
     Comment.create(req.body)

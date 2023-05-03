@@ -7,6 +7,8 @@ router.get('/', controller.getComments)
 
 router.get('/:commentID', controller.getComment)
 
+router.get('/post/:postId', controller.getCommentsForPost)
+
 router.post('/', controller.createComment) 
 
 router.put('/:commentID', controller.updateComment) 

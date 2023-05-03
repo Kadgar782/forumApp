@@ -1,14 +1,13 @@
 import { AccordionDetails } from "@mui/material";
-import React, {lazy, Suspense,} from "react";
+import React from "react";
 import {Comment} from "./Comment"
 
 export const InsideAccordion = ({
   arrayWithCommentsForPost,
   setMappedComments,
   updateComment,
-  loggedInUser,
+  currentUser,
   postControls,
-  accordionState
 }) => {
 
   const commentsExist = Array.isArray(arrayWithCommentsForPost) && arrayWithCommentsForPost.length > 0;
@@ -18,12 +17,12 @@ export const InsideAccordion = ({
   return commentsExist ? (
     arrayWithCommentsForPost.map((commentStuff) => {
       const { _id, body, postId } = commentStuff;
-      return accordionState && (
+      return (
         // <Suspense fallback={<div>Loading comments...</div>}>
           <Comment
             key={_id}
             postControls={postControls}
-            loggedInUser={loggedInUser}
+            currentUser={currentUser}
             commentId={_id}
             commentBody={body}
             postId={postId}
@@ -35,6 +34,10 @@ export const InsideAccordion = ({
       );
     })
   ) : (
-    <AccordionDetails />
+    <AccordionDetails  
+      sx={{ 
+      padding: 0,
+    }}
+    />
   );
 };
