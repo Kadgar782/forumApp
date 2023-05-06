@@ -1,10 +1,10 @@
-import { AccordionDetails } from "@mui/material";
+import { AccordionDetails, Typography } from "@mui/material";
 import React from "react";
 import {Comment} from "./Comment"
 
 export const InsideAccordion = ({
   arrayWithCommentsForPost,
-  setMappedComments,
+  setComments,
   updateComment,
   currentUser,
   postControls,
@@ -27,7 +27,7 @@ export const InsideAccordion = ({
             commentBody={body}
             postId={postId}
             updateComment={updateComment}
-            setMappedComments={setMappedComments}
+            setComments={setComments}
             arrayWithCommentsForPost={arrayWithCommentsForPost}
           />
         // </Suspense>
@@ -36,8 +36,11 @@ export const InsideAccordion = ({
   ) : (
     <AccordionDetails  
       sx={{ 
-      padding: 0,
+        padding: 0,
+        backgroundColor: "#cbcccc",
     }}
-    />
+    >
+     <Typography> No comments yet</Typography> 
+    </AccordionDetails>
   );
 };

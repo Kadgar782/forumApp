@@ -19,7 +19,7 @@ class dataController {
         if (req.headers.authorization === "Bearer" || req.headers.authorization === "Bearer null" ) {
           //without roles and comments 
           if (!arrayForComments) {
-            const commentsInPost = [];
+            const commentsInPost = 0;
             return {
               ...p,
               commentsInPost,
@@ -27,7 +27,7 @@ class dataController {
               controls,
             };
           } else {// has some comments 
-            const commentsInPost = arrayForComments;
+            const commentsInPost = arrayForComments.length;
             return {
               ...p,
               commentsInPost,
@@ -39,7 +39,7 @@ class dataController {
           //have roles
           const adminRole = req.user.roles.find((role) => role === "ADMIN");
           if (!arrayForComments) {
-            const commentsInPost = [];
+            const commentsInPost = 0;
             if (adminRole) {
               const controls = true;
               // If the user is an admin, we return the posts with editing enabled
@@ -58,7 +58,7 @@ class dataController {
               controls,
             };
           } else { // with comments 
-            const commentsInPost = arrayForComments;
+            const commentsInPost = arrayForComments.length;
             // without next if admin can't edit others posts
             if (adminRole === "ADMIN") {
               const controls = true;

@@ -9,13 +9,13 @@ import { Divider } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Textarea from "@mui/joy/Textarea";
-import React, { useState, useContext,  } from "react";
+import React, { useState, } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { CommentContext } from "../App.js";
 import "react-toastify/dist/ReactToastify.css";
 
 export function Comment({
   updateComment,
+  setComments,
   arrayWithCommentsForPost,
   commentId,
   commentBody,
@@ -23,7 +23,6 @@ export function Comment({
   currentUser,
   postControls,
 }) {
-  const [comments, setComments] = useContext(CommentContext);
 
   let comment = arrayWithCommentsForPost.find(
     (comment) => comment._id === commentId
@@ -61,16 +60,13 @@ export function Comment({
  // Delete comment
   const removeElement = async (_id) => {
     try {
-      const response = await fetch(
-        `http://localhost:5001/api/comments/${_id}`,
-        {
-          method: "DELETE",
-        }
+      const response = await fetch(`http://localhost:5001/api/comments/${_id}`,
+      { method: "DELETE",}
       );
       if (response.status >= 400) {
         throw new Error("Server responds with error!");
       }
-      const newComments = comments.filter(
+      const newComments = arrayWithCommentsForPost.filter(
         (arrayForMapping) => arrayForMapping._id !== _id
       );
       setComments(newComments);

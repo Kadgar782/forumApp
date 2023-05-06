@@ -9,29 +9,17 @@ import React, { createContext,  } from "react";
 export const postContext = createContext("without provider");
 
 export const PostSchema = ({
-  updateComment,
   currentUser,
-  functionForAddingComments,
-  mainArrayWithComments,
   arrayWithPosts,
   checkingId,
   deleteElement,
-  setMappedComments,
 }) => {
   return arrayWithPosts.map((post) => {
-    //Filter the necessary comments for a particular post
-
-    const filterComments = (comments, post) => {
-      const reqComments = comments.filter(
-        (comments) => comments.postId === post._id
-      );
-      return reqComments;
-    };
     //If the user is not logged in, he cannot create new posts or write comments
 
     if (currentUser === "")
       return (
-        <postContext.Provider  key={post._id} value={post._id}>
+        <postContext.Provider  key={post._id} value={post._id} >
           <div className="inner" key={post._id}>
             <Typography variant="h5">{post.title}</Typography>
             
@@ -51,12 +39,9 @@ export const PostSchema = ({
               {post.username}
             </span>
             <Divider sx={{ border: 1 }} />
-             <MuiAccordion
+            <MuiAccordion
               postControls={post.controls}
-              updateComment={updateComment}
-              arrayWithCommentsForPost={filterComments(mainArrayWithComments, post)}
-              setMappedComments={setMappedComments}
-              addingComments={functionForAddingComments}
+              commentCount={post.commentsInPost}
               />
           </div>
         </postContext.Provider>
@@ -104,10 +89,7 @@ export const PostSchema = ({
             <Divider sx={{ border: 1 }} />
             <MuiAccordion
               postControls={post.controls}
-              updateComment={updateComment}
-              arrayWithCommentsForPost={filterComments(mainArrayWithComments, post)}
-              setMappedComments={setMappedComments}
-              addingComments={functionForAddingComments}
+              commentCount={post.commentsInPost}
               />
           </div>
         </postContext.Provider>
@@ -136,10 +118,7 @@ export const PostSchema = ({
             <Divider sx={{ border: 1 }} />
             <MuiAccordion
               postControls={post.controls}
-              updateComment={updateComment}
-              arrayWithCommentsForPost={filterComments(mainArrayWithComments, post)}
-              setMappedComments={setMappedComments}
-              addingComments={functionForAddingComments}
+              commentCount={post.commentsInPost}
               />
           </div>
         </postContext.Provider>
