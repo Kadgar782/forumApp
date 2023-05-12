@@ -17,7 +17,6 @@ export const MuiAccordion = ({
   commentCount,
 }) => {
   const postId = useContext(postContext);
-  console.log(commentCount)
 
   const { currentUser } = useContext(userContext);
   const [comments, setComments] = useState([]);

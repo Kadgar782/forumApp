@@ -3,7 +3,8 @@ import { MuiAccordion } from "./MUIAccordion";
 import { Divider } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import React, { createContext,  } from "react";
+import React, { createContext,useState } from "react";
+import InfiniteScroll from 'react-infinite-scroll-component'
 //Context
 
 export const postContext = createContext("without provider");
@@ -14,6 +15,9 @@ export const PostSchema = ({
   checkingId,
   deleteElement,
 }) => {
+  // I need getPostsAuth from app.js in next  <InfiniteScroll
+      // dataLength={posts.length}
+      // next={fetchPosts}
   return arrayWithPosts.map((post) => {
     //If the user is not logged in, he cannot create new posts or write comments
 

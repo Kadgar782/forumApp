@@ -4,7 +4,8 @@ import { logOut } from "../Components/authentication/authFunctions";
 export const API_URL = `http://localhost:5001/`;
 
 class Interceptor {
-  constructor(setCurrentUser, notify) {
+   //required parameters
+  constructor(setCurrentUser, notify) {  
     this.interceptor = axios.create({
       withCredentials: true,
       baseURL: API_URL,
@@ -19,10 +20,14 @@ class Interceptor {
       (config) => {
         return config;
       },
-
+      //if the server gives us the 404 status twice, then a logout will happen
       async (error) => {
         const originalRequest = error.config;
-        if (error.response.status === 404 && error.config && !error.config._isRetry) {
+        if (
+          error.response.status === 404 &&
+          error.config &&
+          !error.config._isRetry
+        ) {
           originalRequest._isRetry = true;
           try {
             const response = await axios.get(`${API_URL}auth/refresh`, {
@@ -43,7 +48,6 @@ class Interceptor {
   get(url, config) {
     return this.interceptor.get(url, config);
   }
-
 }
 
 export default Interceptor;

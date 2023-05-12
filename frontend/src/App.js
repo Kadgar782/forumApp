@@ -30,6 +30,8 @@ function App() {
   const [mappedPosts, setMappedPosts] = useState([]);
   const [userList, setUser] = useState([]);
   const [currentUser, setCurrentUser] = useState("");
+  const [hasMore, setHasMore] = useState(true);
+  const [pageNumber, setPageNumber] = useState(1);
   const [idForEditing, setID] = useState([]);
   const [loginOpen, setLoginOpen] = useState(false);
   const [registrationOpen, setRegistrationOpen] = useState(false);
@@ -41,34 +43,45 @@ function App() {
   useEffect(() => {
 
     // We get posts with the ability to edit and delete them depending on the logged in user
-    const getPostsAuth = async () => {
-      
+      const getPostsAuth = async (setHasMore, setMappedPosts) => {
+      console.log(currentUser)
       const interceptor = new Interceptor(setCurrentUser, notify);
       // In this custom axios request, we pass a token by which we receive all the data with posts,
-      // if the access token has expired, then an attempt is being made to update it with a refresh token,
+      // if the access token has expired, then an attempt is being made to update it with a refresh token
       // but if it has expired, the user's log out will occur.
-      const response = await interceptor.get("api/data");
+      const response = await interceptor.get(`api/data?page=${pageNumber}&limit=5`);
       const post = await response.data;
+      //we reverse the posts so that they are displayed correctly in the feed, from new to old
       const revPost = post.data.reverse();
       console.log(revPost)
-      setMappedPosts(revPost);
-    };
+      console.log(post.hasMore)
+      setMappedPosts((prevPosts) => [...prevPosts, ...revPost]);
+      //check if there are any posts that haven't been uploaded yet
+      setHasMore(post.hasMore)
+      setTimeout(() => console.log(pageNumber), 0);
+      //the following posts will be uploaded from the next one after the last one already uploaded
+      setPageNumber(prevPageNumber => prevPageNumber + 5)
+      console.log(currentUser)
+      console.log(pageNumber)
 
+    };
+    // if there is no data in local storage, that will not happen 
     // checking whether the user has already been logged in
     const loggedInUser = localStorage.getItem("user");
     if (loggedInUser) {
       setCurrentUser(loggedInUser);
     }
 
-    // checcking user token
+    // checking user token
     const localToken = localStorage.getItem("token");
     if (localToken) {
       setToken(localToken);
     }
 
-    getPostsAuth(localToken)
+    getPostsAuth(setHasMore, setMappedPosts)
       .then(() => setIsLoading(false));
   }, [currentUser]);
+
 
   //Refs
   const loginFieldsRef = useRef(null);
