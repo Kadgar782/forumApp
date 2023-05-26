@@ -5,6 +5,8 @@ import React, { useState, useContext  } from "react";
 import { Link, } from "react-router-dom";
 import { userContext } from "../App.js";
 import { postContext } from './PostBlueprint.js';
+import { ToastContainer, toast } from "react-toastify";
+import Interceptor from '../http/interceptor.js';
 
 const style = {
   display: 'flex',
@@ -20,40 +22,53 @@ export const CommentFields = ({addingToArray,}) => {
   const [textFieldContentValue, setTextFieldContentValue] = useState("");
 
   const postId = useContext(postContext);
-  const { currentUser } = useContext(userContext);
+  const { currentUser, setCurrentUser } = useContext(userContext);
 
 
 
   // Function for button to create new comment
 
-  const createNewComment = ( textFieldContentValue) => {
+  const createNewComment = async ( textFieldContentValue) => {
     const username = currentUser;
     const body = textFieldContentValue;
     const thumbnailUrl = "https://via.placeholder.com/150/54176f";
 
     const allData = {username,body,thumbnailUrl,postId}
-
-
     const clearContentValue = () => setTextFieldContentValue("");
 
+    const notify = (status) => {
+      switch (status) {
+        case "success":
+          toast.success("Comment was published");
+          break;
+        case "error":
+          toast.error("Something went wrong");
+          break;
+        default:
+          break;
+      }
+    };
 
     // make request to backend
-
-      fetch("http://localhost:5001/api/comments", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(allData)
-      })
-      .then(response => response.json())
-      .then(result => {
-        addingToArray(result.result)
-        clearContentValue();
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    try {
+      const interceptor = new Interceptor(
+        setCurrentUser,
+        notify,
+      );
+      const response = await interceptor.post("http://localhost:5001/api/comments", allData, )
+      if (response.status >= 400) {
+        throw new Error("Server responds with error!");
+      }
+      const newItem = response.data.result;
+      notify("success");
+      addingToArray(newItem)
+      clearContentValue();
+    } catch (error) {
+      console.error(error);
+      notify("error");
+    }
+  
+  
   }
   
   // //Modal content
@@ -80,6 +95,7 @@ export const CommentFields = ({addingToArray,}) => {
       >
         Confirm
       </Button>
+      <ToastContainer />
     </Box>
    
   );

@@ -10,13 +10,14 @@ class dataController {
 
     try {
       const [posts, comments] = await Promise.all([
-        Product.find({}).lean(),
+        // we sort the posts so that they are displayed on the frontend from new to old
+        Product.find({}).sort({ _id: -1 }).lean(),
         Comment.find({}).lean(),
       ]);
       const dividedPosts = posts.slice(page, page + limit);
       const hasMore = posts.length > endIndex;
 
-      const data = dividedPosts.map((p) => {
+      const responsePosts = dividedPosts.map((p) => {
         //Add Comments
         const arrayForComments = comments.filter(
           (u) => u.postId === p._id.toString()
@@ -89,9 +90,11 @@ class dataController {
             };
           }
         }
-      });
+      }
+      
+      );
 
-      res.status(200).json({ data, hasMore });
+      res.status(200).json({ responsePosts, hasMore });
     } catch (error) {
       res.status(404).json({ error });
     }

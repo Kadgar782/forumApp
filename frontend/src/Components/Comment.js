@@ -9,8 +9,10 @@ import { Divider } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Textarea from "@mui/joy/Textarea";
-import React, { useState, } from "react";
+import React, { useContext, useState, } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import Interceptor from "../http/interceptor";
+import { userContext } from "../App.js";
 import "react-toastify/dist/ReactToastify.css";
 
 export function Comment({
@@ -30,6 +32,7 @@ export function Comment({
 
   const [isEditable, setIsEditable] = useState(false);
   const [body, setBody] = useState(comment.body);
+  const {setCurrentUser} = useContext(userContext)
 
  // Comment data
   const username = comment.username;
@@ -60,12 +63,14 @@ export function Comment({
  // Delete comment
   const removeElement = async (_id) => {
     try {
-      const response = await fetch(`http://localhost:5001/api/comments/${_id}`,
-      { method: "DELETE",}
-      );
-      if (response.status >= 400) {
-        throw new Error("Server responds with error!");
-      }
+        const interceptor = new Interceptor(
+          setCurrentUser,
+          notify,
+        );
+        const response = await interceptor.delete(`http://localhost:5001/api/comments/${_id}`)
+        if (response.status >= 400) {
+          throw new Error("Server responds with error!");
+        }
       const newComments = arrayWithCommentsForPost.filter(
         (arrayForMapping) => arrayForMapping._id !== _id
       );
@@ -78,19 +83,15 @@ export function Comment({
   };
 
   //Function for edit button
+
   const handleSubmit = async (_id) => {
     // make request to backend
     try {
-      const response = await fetch(
-        `http://localhost:5001/api/comments/${_id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedComment),
-        }
+      const interceptor = new Interceptor(
+        setCurrentUser,
+        notify,
       );
+      const response = await interceptor.put(`http://localhost:5001/api/comments/${_id}`, updatedComment, )
       if (response.status >= 400) {
         throw new Error("Server responds with error!");
       }

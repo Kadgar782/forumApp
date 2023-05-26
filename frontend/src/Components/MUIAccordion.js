@@ -2,6 +2,9 @@ import {
   Accordion,
   AccordionSummary,
   Typography,
+  Paper,
+  Button,
+  Grid,
 } from "@mui/material";
 import { InsideAccordion } from "./InsideAccordion";
 import { CommentFields } from "./commentEditor";
@@ -31,9 +34,7 @@ export const MuiAccordion = ({
         const response = await axios.get(`http://localhost:5001/api/comments/post/${postId}?startIndex=${startIndex}&limit=3`);
         setComments(response.data.comments);
         setHasMoreComments(response.data.hasMore);
-        console.log(response.data);
         setStartIndex(startIndex + response.data.comments.length);
-        console.log(startIndex);
         setShowAccordion(true);
       } catch (error) {
         console.error(error);
@@ -47,7 +48,6 @@ export const MuiAccordion = ({
   const handleLoadMoreComments = async () => {
     try {
       const response = await axios.get(`http://localhost:5001/api/comments/post/${postId}?startIndex=${startIndex}&limit=100`);
-      console.log(response)
       setComments(prevComments => [...prevComments, ...response.data.comments]);
       setStartIndex(startIndex + response.data.comments.length);
       setHasMoreComments(response.data.hasMore);
@@ -93,7 +93,11 @@ export const MuiAccordion = ({
           updateComment={updateComment}
         />
          {hasMoreComments && (
-          <button onClick={handleLoadMoreComments}>Load more comments</button>
+          <Paper sx={{backgroundColor: "#cbcccc",}}>
+          <Grid   container justifyContent="center"  >
+          <Button color="inherit"  fontWeight="bold"  variant="text" onClick={handleLoadMoreComments} >Load more comments</Button>
+          </Grid>
+          </Paper>
         )}
       </Accordion>
     );
@@ -111,7 +115,7 @@ export const MuiAccordion = ({
             borderBottom: 1,
           }}
         >
-          <Typography>{`Comments ${commentCount}`}</Typography>
+            <Typography>{`Comments ${commentCount || 0}`}</Typography>
         </AccordionSummary>
         <CommentFields
           _id={postId}
@@ -126,7 +130,11 @@ export const MuiAccordion = ({
           postControls={postControls}
         />
          {hasMoreComments && (
-          <button onClick={handleLoadMoreComments}>Load more comments</button>
+          <Paper sx={{backgroundColor: "#cbcccc",}}>
+          <Grid   container justifyContent="center"  >
+          <Button color="inherit"   fontWeight="bold" variant="text" onClick={handleLoadMoreComments} >Load more comments</Button>
+          </Grid>
+          </Paper>
         )}
       </Accordion>
     );

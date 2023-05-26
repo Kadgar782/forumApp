@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import React, { useState, forwardRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import Interceptor from "../http/interceptor";
 import "react-toastify/dist/ReactToastify.css";
 
 const style = {
@@ -21,6 +22,7 @@ export const EditPostFields = forwardRef(({
   specificId,
   allPosts,
   updatePost,
+  setCurrentUser,
   modalStatusChange,
 },ref) => {
   let thePost = allPosts.find((post) => post._id === specificId);
@@ -60,16 +62,14 @@ export const EditPostFields = forwardRef(({
   const handleSubmit = async() => {
     // make request to backend
     try {
-    const response = await fetch(`http://localhost:5001/api/products/${_id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedPost),
-    });
-    if (response.status >= 400) {
-      throw new Error("Server responds with error!");
-    }
+      const interceptor = new Interceptor(
+        setCurrentUser,
+        notify,
+      );
+      const response = await interceptor.put(`http://localhost:5001/api/products/${_id}`, updatedPost, )
+      if (response.status >= 400) {
+        throw new Error("Server responds with error!");
+      }
     notify("success");
     } catch(error) {
       console.error(error);

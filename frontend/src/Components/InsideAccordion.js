@@ -12,13 +12,11 @@ export const InsideAccordion = ({
 
   const commentsExist = Array.isArray(arrayWithCommentsForPost) && arrayWithCommentsForPost.length > 0;
 
-  // const Comment = lazy(() => import("./Comment"));
 
   return commentsExist ? (
     arrayWithCommentsForPost.map((commentStuff) => {
       const { _id, body, postId } = commentStuff;
       return (
-        // <Suspense fallback={<div>Loading comments...</div>}>
           <Comment
             key={_id}
             postControls={postControls}
@@ -30,7 +28,6 @@ export const InsideAccordion = ({
             setComments={setComments}
             arrayWithCommentsForPost={arrayWithCommentsForPost}
           />
-        // </Suspense>
       );
     })
   ) : (

@@ -24,18 +24,27 @@ class productController {
 })
 
  createProduct = ((req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
     Product.create(req.body)
         .then(result => res.status(200).json({ result }))
         .catch((error) => res.status(500).json({msg:  error }))
 })
 
  updateProduct = ((req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
     Product.findOneAndUpdate({ _id: req.params.productID }, req.body, { new: true, runValidators: true })
         .then(result => res.status(200).json({ result }))
         .catch((error) => res.status(404).json({msg: 'Product not found' }))
 })
 
  deleteProduct = ((req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
     Product.findOneAndDelete({ _id: req.params.productID })
         .then(result => res.status(200).json({ result }))
         .catch((error) => res.status(404).json({msg: 'Product not found' }))

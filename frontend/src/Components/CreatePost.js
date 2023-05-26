@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import React, { useState,  } from "react";
 import { Link, } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import Interceptor from '../http/interceptor';
 import "react-toastify/dist/ReactToastify.css";
 
 const style = {
@@ -18,7 +19,7 @@ const style = {
   p: 4,
 };
 
-export const PostFields =  ({userName,addingToArray,}) => {
+export const PostFields =  ({userName,addingToArray, setCurrentUser}) => {
 
   const [tfHeaderValue,setTFHeaderValue ] = useState("");
   const [tfContentValue, setTFContentValue] = useState("");
@@ -53,21 +54,22 @@ export const PostFields =  ({userName,addingToArray,}) => {
       }
     };
 
+
+    
     // make request to backend
+
     try {
-      const respons = await fetch("http://localhost:5001/api/products", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(allData)
-      })
-      if (respons.status >= 400) {
+      const interceptor = new Interceptor(
+        setCurrentUser,
+        notify,
+      );
+      const response = await interceptor.post("http://localhost:5001/api/products", allData, )
+      if (response.status >= 400) {
         throw new Error("Server responds with error!");
       }
-      const result = await respons.json()
+      const newItem = response.data.result;
       notify("success");
-      addingToArray(result.result)
+      addingToArray(newItem)
     } catch (error) {
       console.error(error);
       notify("error");

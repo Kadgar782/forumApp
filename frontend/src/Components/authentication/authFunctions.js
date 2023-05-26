@@ -32,7 +32,7 @@
 
     
   //Logging out and clearing the local storage
-    export const logOut = async (setCurrentUser, notify) =>{
+    export const logOut = async (setCurrentUser, notify,) =>{
         try {
           const response = await fetch("http://localhost:5001/auth/logout", {
             method: "POST",
