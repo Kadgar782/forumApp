@@ -127,6 +127,7 @@ function App() {
         notify,
       );
       const response = await interceptor.delete(`http://localhost:5001/api/comments/post/${_id}`)
+      loadNextPosts();
       if (response.status >= 400) {
         throw new Error("Server responds with error!");
       }
@@ -137,17 +138,19 @@ function App() {
 
     //Backend fetch
     try {
-      const response = fetch(`http://localhost:5001/api/products/${_id}`, {
-        method: "DELETE",
-      });
+      const interceptor = new Interceptor(
+        setCurrentUser,
+        notify,
+      );
+      const response = await interceptor.delete(`http://localhost:5001/api/products/${_id}`)
       if (response.status >= 400) {
         throw new Error("Server responds with error!");
       }
-      notify("success");
     } catch (error) {
       console.error(error);
       notify("error");
     }
+
     const newPosts = mappedPosts.filter(
       (mappedPosts) => mappedPosts._id !== _id
     );

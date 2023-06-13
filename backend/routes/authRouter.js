@@ -6,11 +6,13 @@ const authMiddleware = require("../middleware/authMiddleware")
 
 router.post('/registration', [
     check('username', "Username can't be empty").notEmpty(),
+    check('email', "Email can't be empty").notEmpty(),
     check('password', "Password must be more than 4 characters and less than 10").isLength({min:4, max:10})
 ], controller.registration)
 router.post('/login', controller.login)
 router.post('/logout', controller.logout);
 router.get('/users', authMiddleware, controller.getUsers)
+router.get('/activate/:link', controller.activate);
 router.get('/refresh', controller.refresh);
 router.get('/:userID', controller.getUserRole)
 

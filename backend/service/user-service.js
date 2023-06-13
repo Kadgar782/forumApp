@@ -30,6 +30,16 @@ async refresh(refreshToken ) {
 
      return {...tokens, user};
 }
+
+  async activate(activationLink) {
+    const user = await User.findOne({activationLink})
+    if (!user) {
+        throw ApiError.BadRequest('Неккоректная ссылка активации')
+    }
+    user.isActivated = true;
+    await user.save();
+}
+
 }
 
 
