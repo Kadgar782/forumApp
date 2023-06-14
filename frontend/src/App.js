@@ -73,6 +73,9 @@ function App() {
         //check if there are any posts that haven't been uploaded yet
         setHasMore(data.hasMore);
       } catch (error) {
+        if (error.response && error.response.status === 403) {
+        notify("notActivated");
+        }
         console.error(error);
       }
     };
@@ -112,6 +115,9 @@ function App() {
         break;
       case "error":
         toast.error("Something went wrong");
+        break;
+      case "notActivated":
+        toast.error("You must activate your account via email before using the site")
         break;
       default:
         break;
