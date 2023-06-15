@@ -22,7 +22,6 @@ export function Comment({
   commentId,
   commentBody,
   postId,
-  currentUser,
   postControls,
 }) {
 
@@ -32,10 +31,11 @@ export function Comment({
 
   const [isEditable, setIsEditable] = useState(false);
   const [body, setBody] = useState(comment.body);
-  const {setCurrentUser} = useContext(userContext)
+  const {currentUser, setCurrentUser} = useContext(userContext)
 
  // Comment data
   const username = comment.username;
+  console.log(username)
   const thumbnailUrl = "https://via.placeholder.com/150/54176f";
   const _id = commentId;
   const updatedComment = { _id, body, thumbnailUrl, postId, username };

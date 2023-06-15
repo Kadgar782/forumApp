@@ -6,7 +6,6 @@ export const InsideAccordion = ({
   arrayWithCommentsForPost,
   setComments,
   updateComment,
-  currentUser,
   postControls,
 }) => {
 
@@ -20,7 +19,6 @@ export const InsideAccordion = ({
           <Comment
             key={_id}
             postControls={postControls}
-            currentUser={currentUser}
             commentId={_id}
             commentBody={body}
             postId={postId}

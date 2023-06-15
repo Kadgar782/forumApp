@@ -87,7 +87,6 @@ export const MuiAccordion = ({
           <Typography>{`Comments ${commentCount}`}</Typography>
         </AccordionSummary>
         <InsideAccordion
-          currentUser={currentUser}
           arrayWithCommentsForPost={comments}
           setMappedComments={setComments}
           updateComment={updateComment}
