@@ -47,10 +47,8 @@ class authController {
 
     async activate(req, res, next) {
       try {
-        console.log("account")
           const activationLink = req.params.link;
           await userService.activate(activationLink);
-          console.log("somebody tried to activate account")
           return res.redirect(process.env.CLIENT_URL);
       } catch (e) {
           next(e);
@@ -71,7 +69,6 @@ class authController {
 
           const token = tokenService.generateTokens(user._id, user.roles)
           await tokenService.saveToken(user._id, token.refreshToken)
-          console.log(token.refreshToken)
           res.cookie("refreshToken", token.refreshToken, {
             maxAge: 30 * 24 * 60 * 60 * 1000,
             httpOnly: true,
@@ -97,7 +94,6 @@ class authController {
 
     async getUsers (req, res) {
        try{
-         console.log(req.user.roles) 
           const users = await User.find() 
         res.json(users)
        } catch (e) {

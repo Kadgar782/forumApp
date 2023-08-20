@@ -24,10 +24,7 @@ class dataController {
         );
         const controls = false;
         const hasComments = arrayForComments.length > 0;
-        if (
-          req.headers.authorization === "Bearer" ||
-          req.headers.authorization === "Bearer null"
-        ) {
+        if (!req.user) {
           //without roles and comments
           if (!arrayForComments) {
             const commentsInPost = 0;

@@ -7,21 +7,25 @@ import {
   AppBar,
   Button,
   Modal,
+  LinearProgress,
 } from "@mui/material";
 import { Routes, Route, Link } from "react-router-dom";
-import { PostFields } from "./Components/CreatePost.js";
+import { PostFields } from "./Pages/CreatePost.js";
 import { EditPostFields } from "./Components/editPost.js";
 import { PostSchema } from "./Components/PostBlueprint.js";
 import MenuIcon from "@mui/icons-material/Menu";
-import { LoginFields } from "./Components/loginUser.js";
-import { RegistrationFields } from "./Components/registrationFields.js";
+import { LoginFields } from "./Components/authentication/loginUser.js";
+import { RegistrationFields } from "./Components/authentication/registrationFields.js";
 import { ToastContainer, toast } from "react-toastify";
 import { logOut } from "./Components/authentication/authFunctions.js";
-import InfiniteScroll from "react-infinite-scroll-component";
-import Interceptor from "./http/interceptor.js";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getPostsAuth, removePost } from "./http/posts.js";
+import { SinglePost } from "./Pages/singlePost.js";
+import { NotFound } from "./Pages/NotFound.js";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
-
+import { refreshTokens } from "./http/interceptor.js";
 //Context
 export const userContext = createContext("without user provider");
 export const CommentContext = createContext("without comment provider");
@@ -36,9 +40,6 @@ function App() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [registrationOpen, setRegistrationOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [pageNumber, setPageNumber] = useState(5);
-  // eslint-disable-next-line  no-unused-vars
-  const [token, setToken] = useState(""); //taking a token from local storage is faster than from a  useState, but I still need a setToken
 
   //Getting Post content
   useEffect(() => {
@@ -48,120 +49,66 @@ function App() {
     if (loggedInUser) {
       setCurrentUser(loggedInUser);
     }
-
-    // checking user token
-    const localToken = localStorage.getItem("token");
-    if (localToken) {
-      setToken(localToken);
-    }
-    // We get posts with the ability to edit and delete them depending on the logged in user
-    const getPostsAuth = async () => {
-      try {
-        const interceptor = new Interceptor(
-          setCurrentUser,
-          notify,
-        );
-        // In this custom axios request, we pass a token by which we receive all the data with posts,
-        // if the access token has expired, then an attempt is being made to update it with a refresh token
-        // but if it has expired, the user's log out will occur.
-        const response = await interceptor.get(`api/data?page=0&limit=5`);
-        const data = response.data;
-        const posts = data.responsePosts;
-        //if we do not pass an empty array, then posts with the same keys will be duplicated
-        setMappedPosts([]);
-        setMappedPosts(posts);
-        //check if there are any posts that haven't been uploaded yet
-        setHasMore(data.hasMore);
-      } catch (error) {
-        if (error.response && error.response.status === 403) {
-        notify("notActivated");
-        }
-        console.error(error);
-      }
-    };
-
-    getPostsAuth(setHasMore, setMappedPosts).then(() => setIsLoading(false));
   }, [currentUser]);
-// function for uploading posts when the user has already viewed all the originally uploaded ones and scrolls down
-  const loadNextPosts = async () => {
-    try {
-      const interceptor = new Interceptor(
-        setCurrentUser,
-        notify,
-        setMappedPosts
-      );
-      const response = await interceptor.get(
-        `api/data?page=${pageNumber}&limit=2`
-      );
-      const data = response.data;
-      const posts = data.responsePosts;
-      setMappedPosts((prevPosts) => [...prevPosts, ...posts]);
-      setPageNumber((prevPageNumber) => prevPageNumber + 2);
-      //check if there are any posts that haven't been uploaded yet
-      setHasMore(data.hasMore);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+
+  // We use this to get all posts and update them on the background
+  const { isFetchingNextPage, fetchNextPage, isRefetching } = useInfiniteQuery({
+    queryKey: ["responsePosts", "infinite"],
+    queryFn: ({ pageParam = 0 }) =>
+      getPostsAuth(setCurrentUser, pageParam),
+    refetchInterval: 1000 * 60 * 2,
+    refetchOnReconnect: "always",
+    getNextPageParam: (lastPage, allPages) => {
+      const allPagesWithoutIndex = [];
+      allPages.forEach((item) => {
+        const posts = item.posts;
+        allPagesWithoutIndex.push(...posts);
+      });
+      const nextPage =
+        lastPage.posts.length === 5
+          ? allPagesWithoutIndex.length + 1
+          : undefined;
+      return nextPage;
+    },
+
+    onSuccess: (responseData) => {
+      const allPosts = [];
+      responseData.pages.forEach((item) => {
+        const posts = item.posts;
+        const hasMore = item.hasMore;
+        setHasMore(hasMore);
+        allPosts.push(...posts);
+      });
+      setMappedPosts(allPosts);
+      setIsLoading(false);
+    },
+  });
 
   //Refs
   const loginFieldsRef = useRef(null);
-
-  // Notify
-  const notify = (status) => {
-    switch (status) {
-      case "success":
-        toast.success("Post was deleted");
-        break;
-      case "error":
-        toast.error("Something went wrong");
-        break;
-      case "notActivated":
-        toast.error("You must activate your account via email before using the site")
-        break;
-      default:
-        break;
-    }
-  };
-
+  
   //Post remove function
-  const removeElement = async (_id) => {
-    //We delete all comments from post, before deleting the posts themselves
-    try {
-      const interceptor = new Interceptor(
-        setCurrentUser,
-        notify,
-      );
-      const response = await interceptor.delete(`http://localhost:5001/api/comments/post/${_id}`)
-      loadNextPosts();
-      if (response.status >= 400) {
-        throw new Error("Server responds with error!");
-      }
-    } catch (error) {
-      console.error(error);
-      notify("error");
-    }
 
-    //Backend fetch
-    try {
-      const interceptor = new Interceptor(
-        setCurrentUser,
-        notify,
-      );
-      const response = await interceptor.delete(`http://localhost:5001/api/products/${_id}`)
-      if (response.status >= 400) {
-        throw new Error("Server responds with error!");
-      }
-    } catch (error) {
-      console.error(error);
-      notify("error");
-    }
+  const queryClient = useQueryClient();
 
-    const newPosts = mappedPosts.filter(
-      (mappedPosts) => mappedPosts._id !== _id
-    );
+  const deletePostMutation = useMutation({
+    mutationFn: (_id) => removePost(_id),
+    retry: 1,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["responsePosts"]);
+      toast.success("Post was deleted");
+    },
+    // if an error happened, then either user has no rights or tokens are outdated
+    onError: (error) => {
+      refreshTokens();
+      toast.error("Something went wrong",{
+      });
+      console.log(error);
+    },
+  });
 
-    setMappedPosts(newPosts);
+  const deletePost = async (_id) => {
+    deletePostMutation.mutate(_id);
   };
 
   // Modal changes
@@ -181,20 +128,8 @@ function App() {
     handleEditableModalToggle();
   };
 
-  //Changing a post with a specific id
-  const updatePost = (updatedPost) => {
-    setMappedPosts(
-      mappedPosts.map((post) =>
-        post._id === idForEditing ? updatedPost : post
-      )
-    );
-  };
-
   //Adding new data from a component
-  //in theory, these three functions can be replaced with one with two parameters, but it was faster this way
-  const addingToMappedPosts = (added) => {
-    setMappedPosts([added, ...mappedPosts]);
-  };
+  // this function is designed for potential future interactions with the user list, at the time of writing it does about nothing
   const addingToUserList = (added) => {
     setUser([added, ...userList]);
   };
@@ -213,9 +148,11 @@ function App() {
                 edge="start"
                 color="inherit"
                 aria-label="menu"
+                disableTouchRipple
                 sx={{ mr: 2 }}
               >
-                <MenuIcon />
+                <MenuIcon
+                 sx={{ pr: 2 }} />
                 ZAP
               </IconButton>
               <Typography
@@ -238,7 +175,9 @@ function App() {
               ) : (
                 <Button
                   color="inherit"
-                  onClick={() => logOut(setCurrentUser, notify)}
+                  component={Link}
+                  to="/"
+                  onClick={() => logOut(setCurrentUser)}
                 >
                   Log out
                 </Button>
@@ -249,47 +188,56 @@ function App() {
                 </Button>
               ) : null}
             </Toolbar>
+            {isLoading && <LinearProgress/>}
+            {isRefetching && <LinearProgress/>}
           </AppBar>
         </Box>
 
         {/*here we define paths for pages. In this project I have only two pages, the main page and the editor for creating posts. 
            I was planning to add more features to the editor*/}
         <Routes>
+          {/* This path leads to the editor */}
           <Route
             path="/editor"
-            element={
-              <PostFields
-                userName={currentUser}
-                addingToArray={addingToMappedPosts}
-                setCurrentUser={setCurrentUser}
-              />
-            }
+            element={<PostFields userName={currentUser} />}
           />
+          {/* This path leads to the main page */}
           <Route
             path="/"
             element={
-              // we are waiting for data from the backend
-              isLoading ? (
-                <div>IS loading...</div>
-              ) : (
-                <InfiniteScroll
-                  dataLength={mappedPosts.length}
-                  next={loadNextPosts}
-                  hasMore={hasMore}
-                  loader={<h2>Loading...</h2>}
-                  endMessage={<p>No more posts to load.</p>}
-                  style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
-                >
-                  <PostSchema
-                    currentUser={currentUser}
-                    arrayWithPosts={mappedPosts}
-                    checkingId={checkId}
-                    deleteElement={removeElement}
-                  />
-                </InfiniteScroll>
-              )
+              <>
+                <PostSchema
+                  currentUser={currentUser}
+                  arrayWithPosts={mappedPosts}
+                  checkingId={checkId}
+                  fetchNextPage={fetchNextPage}
+                />
+                <ToastContainer />
+                {/* even on an emulated slow connection, my posts in a couple of lines load fast enough and the loading line appears for a few milliseconds,
+                 but however it is there */}
+                {isFetchingNextPage && <LinearProgress />}
+                {hasMore === false && (
+                  <div className="inner">No more posts to load</div>
+                )}
+              </>
             }
           />
+          <Route
+            path="/:postId"
+            element={
+              <>
+                <SinglePost
+                  checkingId={checkId}
+                  deleteElement={deletePost}
+                  currentUser={currentUser}
+                  setCurrentUser={setCurrentUser}
+                />
+                <ToastContainer />
+              </>
+            }
+          />
+          <Route path='/error/404' element={<NotFound />}/>
+          <Route path='*' element={<NotFound />}/>
         </Routes>
 
         {/* Modal windows for logging in, registering and editing posts.*/}
@@ -299,12 +247,12 @@ function App() {
             ref={loginFieldsRef}
             modalStatusChange={handleLoginModalToggle}
             setCurrentUser={setCurrentUser}
-            setToken={setToken}
           />
         </Modal>
 
         <Modal open={registrationOpen} onClose={handleRegistrationModalToggle}>
           <RegistrationFields
+            ref={loginFieldsRef}
             modalStatusChange={handleRegistrationModalToggle}
             addingToArray={addingToUserList}
           />
@@ -315,13 +263,8 @@ function App() {
             modalStatusChange={handleEditableModalToggle}
             specificId={idForEditing}
             allPosts={mappedPosts}
-            updatePost={updatePost}
-            setCurrentUser={setCurrentUser}
           />
         </Modal>
-        <div>
-          <ToastContainer />
-        </div>
       </div>
     </userContext.Provider>
   );

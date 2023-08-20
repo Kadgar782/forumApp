@@ -15,12 +15,12 @@ class commentController {
 })
 
  async getCommentsForPost (req, res) {
-  const startIndex = parseInt(req.query.startIndex || 0);
+  const page = parseInt(req.query.page || 0);
   const limit = parseInt(req.query.limit || 3);
-  const endIndex = startIndex + limit
+  const endIndex = page + limit
   try {
    const comments = await Comment.find( {postId: req.params.postId} )
-   const dividedComment = comments.slice(startIndex, startIndex + limit);
+   const dividedComment = comments.slice(page, page + limit);
    const hasMore = comments.length > endIndex;
    res.send({ comments: dividedComment, hasMore });
   } catch (error) {

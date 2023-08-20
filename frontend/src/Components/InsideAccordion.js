@@ -4,11 +4,10 @@ import {Comment} from "./Comment"
 
 export const InsideAccordion = ({
   arrayWithCommentsForPost,
-  setComments,
-  updateComment,
   postControls,
 }) => {
 
+  // check if there are any comments  
   const commentsExist = Array.isArray(arrayWithCommentsForPost) && arrayWithCommentsForPost.length > 0;
 
 
@@ -22,8 +21,6 @@ export const InsideAccordion = ({
             commentId={_id}
             commentBody={body}
             postId={postId}
-            updateComment={updateComment}
-            setComments={setComments}
             arrayWithCommentsForPost={arrayWithCommentsForPost}
           />
       );

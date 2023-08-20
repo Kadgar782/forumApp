@@ -2,6 +2,7 @@ html, body {
   height: 100%;
   width: 100%;
   margin: 0;
+  background-color: #f2f2f2;
 }
 div#root {
   width: 100%;
@@ -12,12 +13,19 @@ div#root {
 div.outer {
   display: flex;
   justify-content: center;
-  flex-direction:column
+  flex-direction:column;
+  background-color: #f2f2f2;
 }
 div.inner{
-  background-color:#ffffff;
+  background-color:#cbcccc;
   width: 40%;
   border: solid black 2px;
+  border-radius: 3px;
+  margin-bottom: 5px;
+  align-self: center;
+}
+div.innerSinglePost{
+  width: 40%;
   border-radius: 3px;
   margin-bottom: 5px;
   align-self: center;
@@ -35,7 +43,6 @@ p {
   word-wrap: break-word;
 }
 h5 {
-
 color: rgb(21, 100, 33);
 background-color: #ededed;
 font-weight: 300;
@@ -47,7 +54,7 @@ word-wrap: break-word;
 span {
   display: flex;
   justify-content: left;
-  color: coral;
+  color: #8A2900;
   padding-right: 8px;
   padding-left: 5px;
   padding-bottom: 5px;

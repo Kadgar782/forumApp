@@ -1,7 +1,9 @@
-import TextField from "@mui/material/TextField";
+import { InputAdornment, TextField, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import React, { useState, forwardRef } from "react";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const style = {
   position: "absolute",
@@ -20,8 +22,13 @@ export const RegistrationFields = forwardRef(
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
-    const isPasswordTooShort = password.length < 6 & password.length !== 0;
+    const handleTogglePassword = () => {
+      setShowPassword(!showPassword);
+    };
+
+    const isPasswordTooShort = (password.length < 6) & (password.length !== 0);
     const isPasswordTooLong = password.length > 20;
 
     // Function for button
@@ -64,7 +71,8 @@ export const RegistrationFields = forwardRef(
           autoFocus
           label="Email"
           value={email}
-          multiline={true}
+          name="email"
+          autoComplete="email"
           onChange={(newValue) => setEmail(newValue.target.value)}
           sx={{
             marginBottom: 1,
@@ -74,7 +82,8 @@ export const RegistrationFields = forwardRef(
         <TextField
           label="Username"
           value={username}
-          multiline={true}
+          name="username"
+          autoComplete="username"
           onChange={(newValue) => setUsername(newValue.target.value)}
           sx={{
             marginBottom: 1,
@@ -83,6 +92,7 @@ export const RegistrationFields = forwardRef(
         ></TextField>
         <TextField
           label="Password"
+          type={showPassword ? "text" : "password"}
           helperText={
             isPasswordTooShort
               ? "Password is too short"
@@ -91,11 +101,22 @@ export const RegistrationFields = forwardRef(
               : ""
           }
           error={isPasswordTooShort || isPasswordTooLong}
-          multiline={true}
+          name="new-password"
+          autoComplete="new-password"
           value={password}
           onChange={(newValue) => setPassword(newValue.target.value)}
           sx={{
             width: 5 / 6,
+          }}
+          //here we add a button to display the password so that the user can make sure what he has entered in the field
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={handleTogglePassword} edge="end">
+                  {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                </IconButton>
+              </InputAdornment>
+            ),
           }}
         ></TextField>
         <Button

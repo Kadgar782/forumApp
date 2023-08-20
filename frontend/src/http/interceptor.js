@@ -1,18 +1,22 @@
 import axios from "axios";
-import { logOut } from "../Components/authentication/authFunctions";
+import { logOut } from "../Components/authentication/authFunctions"
 
-export const API_URL = `http://localhost:5001/`;
+
+const API_URL = process.env.REACT_APP_API_URL
 
 class Interceptor {
    //required parameters
-  constructor(setCurrentUser, notify, ) {  
+  constructor(setCurrentUser) {  
     this.interceptor = axios.create({
       withCredentials: true,
       baseURL: API_URL,
     });
 
     this.interceptor.interceptors.request.use((config) => {
-      config.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
       return config;
     });
     // without this we can lose context 
@@ -38,14 +42,14 @@ class Interceptor {
         ) {
           originalRequest._isRetry = true;
           try {
-            const response = await axios.get(`${API_URL}auth/refresh`, {
+            const response = await axios.get(`${API_URL}/auth/refresh`, {
               withCredentials: true,
             });
             localStorage.setItem("token", response.data.accessToken);
             return this.interceptor.request(originalRequest);
           } catch (e) {
           //if the server gives us the 404 or 401 status twice, then a logout will happen
-            logOut(setCurrentUser, notify, );
+            logOut(setCurrentUser);
             console.log("The user is not logged in");
           }
         }
@@ -70,5 +74,54 @@ class Interceptor {
     return await this.interceptor.delete(url, config);
   }
 }
+
+//with the addition of tanstack query, some limitations have appeared due to which I cannot use my usual interceptor, 
+//so I will take out the token update function separately.
+  const apiForRefresh = axios.create({
+    baseURL: API_URL,
+    withCredentials: true,
+  });
+  
+  const maxRetryAttempts = 2;
+  const retryDelay = 1000; // delay in milliseconds
+  
+  apiForRefresh.interceptors.request.use((config) => {
+    config.retryAttempts = config.retryAttempts || 0;
+    return config;
+  });
+  
+  apiForRefresh.interceptors.response.use(undefined, async (error) => {
+    const { config, response } = error;
+   // check if the status is not authorized or forbidden
+    if ((response && response.status === 401) || response.status === 403) {
+      // We retry the request only if the number of attempts is less than maxRetryAttempts
+      if (config && config.retryAttempts < maxRetryAttempts) {
+        const newConfig = {
+          ...config,
+          retryAttempts: config.retryAttempts + 1,
+        };
+  
+        await new Promise((resolve) => setTimeout(resolve, retryDelay));
+  
+        // Resending the request with new configuration
+        return apiForRefresh(newConfig);
+      }
+    }
+    // If the repeated request attempts are exhausted or the error is not related to the server response, we return an error
+    return Promise.reject(error);
+  });
+// Function for refreshing tokens 
+export  const refreshTokens = async () => {
+  try {
+    const response = await apiForRefresh.get(`${API_URL}/auth/refresh`, {
+      withCredentials: true,
+    });
+    console.log(response.data.accessToken)
+    localStorage.setItem("token", response.data.accessToken);
+    return response.data.accessToken;
+  } catch (error) {
+    throw new Error('Failed to refresh access token');
+  }
+};
 
 export default Interceptor;
