@@ -1,6 +1,10 @@
 {
     "rewrites":  [
-      {"source": "/(.*)", "destination": "/"}
+      {"source": "/(.*)", "destination": "/"},
+      { "src": "/editor", "dest": "/" },
+      { "src": "/:postId", "dest": "/" },
+      { "src": "/error/404", "dest": "/" },
+      { "src": "*", "dest": "/" }
     ]
   }
   
