@@ -39,9 +39,12 @@ export const CommentFields = ({postIdFromSinglePost}) => {
   const createCommentMutation = useMutation({
     mutationFn: (allData) => createNewComment(allData),
     onSuccess: (data) => {
-      console.log(data)
       queryClient.setQueryData(["comments", data._id], data);
+      queryClient.setQueryData(["singlePostComments", data._id], data);
       queryClient.invalidateQueries(["comments", postId], {
+        exact: true,
+      });
+      queryClient.invalidateQueries(["singlePostComments", postId], {
         exact: true,
       });
       toast.success("Comment was published");

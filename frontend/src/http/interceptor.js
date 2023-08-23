@@ -116,7 +116,6 @@ export  const refreshTokens = async () => {
     const response = await apiForRefresh.get(`${API_URL}/auth/refresh`, {
       withCredentials: true,
     });
-    console.log(response.data.accessToken)
     localStorage.setItem("token", response.data.accessToken);
     return response.data.accessToken;
   } catch (error) {

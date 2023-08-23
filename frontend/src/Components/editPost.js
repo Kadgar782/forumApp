@@ -47,7 +47,6 @@ const queryClient = useQueryClient();
   const editPostMutation = useMutation({
     mutationFn: (updatedPost) => editCurrentPost(updatedPost),
     onSuccess: (data) => {
-      console.log(data);
       queryClient.setQueryData(["responsePosts", data._id], data);
       queryClient.invalidateQueries(["post", _id], {
         exact: true,

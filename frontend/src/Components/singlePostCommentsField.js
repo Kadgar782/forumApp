@@ -67,9 +67,6 @@ export const SinglePostCommentField = ({
     },
   });
 
-  const commentsExist = Array.isArray(comments) && comments.length > 0;
-  console.log(commentsExist);
-
   if (isLoading) {
     return <LinearProgress />;
   }

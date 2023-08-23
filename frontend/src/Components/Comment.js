@@ -50,6 +50,9 @@ export function Comment({
     mutationFn: (_id) => removeComment(_id),
     retry: 1,
     onSuccess: () => {
+      queryClient.invalidateQueries(["singlePostComments", postId], {
+        exact: true,
+      });
       queryClient.invalidateQueries(["comments", postId], {
         exact: true,
       });
@@ -73,6 +76,9 @@ const editCommentMutation = useMutation({
   retry: 1,
   onSuccess: () => {
     queryClient.invalidateQueries(["comments", postId], {
+      exact: true,
+    });
+    queryClient.invalidateQueries(["singlePostComments", postId], {
       exact: true,
     });
     toast.success("Comment has been edited");

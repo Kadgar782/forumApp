@@ -70,7 +70,7 @@ export const PostFields = ({ userName }) => {
               onChange={(event) => setTitle(event.target.value)}
               sx={{
                 marginBottom: 1,
-                width: 5 / 6,
+                width: 1 / 1,
               }}
             ></TextField>
             <TextField

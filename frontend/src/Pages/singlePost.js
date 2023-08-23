@@ -1,4 +1,4 @@
-import { Typography, Avatar, IconButton, LinearProgress } from "@mui/material";
+import { Typography, Avatar, IconButton, } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { getPost } from "../http/posts";
@@ -10,22 +10,14 @@ import { Skeleton } from "@mui/material";
 import {
   useQueryClient,
   useMutation,
-  useInfiniteQuery,
 } from "@tanstack/react-query";
 import { removePost } from "../http/posts";
 import { toast } from "react-toastify";
 import { refreshTokens } from "../http/interceptor";
-import { getCommentsForPost } from "../http/comments";
-import { Comment } from "../Components/Comment";
-import { CommentFields } from "../Components/commentEditor";
-import React, { useState } from "react";
+import React from "react";
 import { SinglePostCommentField } from "../Components/singlePostCommentsField";
-import { postContext } from "../Components/PostBlueprint";
 
 export const SinglePost = ({ currentUser, setCurrentUser, checkingId }) => {
-  const [comments, setComments] = useState([]);
-  const [hasComments, setHasComments] = useState(false);
-  const [hasMoreComments, setHasMoreComments] = useState(false);
 
   const { postId } = useParams();
 
@@ -35,53 +27,6 @@ export const SinglePost = ({ currentUser, setCurrentUser, checkingId }) => {
   const { isLoading, isError, isSuccess, data } = useQuery({
     queryKey: ["post", postId],
     queryFn: ({ idForPost = postId }) => getPost(idForPost, setCurrentUser),
-  });
-
-  // Getting Comments
-  const {
-    isFetchingNextPage,
-    fetchNextPage,
-    data: commentData,
-    isSuccess: commentsSucces,
-    isLoading: commentLoading,
-    isRefetching: refetchingComments,
-  } = useInfiniteQuery({
-    queryKey: ["comments", postId],
-    refetchOnReconnect: "always",
-    staleTime: 1000 * 3,
-    queryFn: ({ pageParam = 0 }) =>
-      getCommentsForPost(setCurrentUser, postId, pageParam),
-    refetchInterval: 1000 * 60,
-
-    getNextPageParam: (lastPage, allPages) => {
-      const allPagesWithoutIndex = [];
-      allPages.forEach((item) => {
-        const comments = item.comments;
-        allPagesWithoutIndex.push(...comments);
-      });
-      const nextPage =
-        lastPage.comments.length === 50
-          ? allPagesWithoutIndex.length + 1
-          : undefined;
-      return nextPage;
-    },
-
-    onSuccess: (responseData) => {
-      const allComments = [];
-
-      responseData.pages.forEach((item) => {
-        const comments = item.comments;
-        const hasMore = item.hasMore;
-        setHasMoreComments(hasMore);
-        allComments.push(...comments);
-      });
-      setComments(allComments);
-      if (comments) {
-        setHasComments(true);
-      }
-      console.log(hasComments);
-      console.log(comments);
-    },
   });
 
   const queryClient = useQueryClient();
@@ -125,9 +70,6 @@ export const SinglePost = ({ currentUser, setCurrentUser, checkingId }) => {
     );
   }
 
-  // check if there are any comments
-  const commentsExist = Array.isArray(comments) && comments.length > 0;
-  console.log(commentsExist);
 
   if (isSuccess) {
     // If the user is an admin or the author of current post, he can see and click the buttons for editing
@@ -177,25 +119,6 @@ export const SinglePost = ({ currentUser, setCurrentUser, checkingId }) => {
               setCurrentUser={setCurrentUser}
               postControls={data.controls}
             />
-            {/* <CommentFields postIdFromSinglePost={postId} />
-            {commentLoading && <LinearProgress />}
-            {commentsExist ? (
-              comments.map((commentStuff) => {
-                const { _id, body, postId } = commentStuff;
-                return (
-                  <Comment
-                    key={_id}
-                    postControls={data.controls}
-                    commentId={_id}
-                    commentBody={body}
-                    postId={postId}
-                    arrayWithCommentsForPost={comments}
-                  />
-                );
-              })
-            ) : (
-              <Box></Box>
-            )} */}
           </Box>
         </div>
       );
@@ -228,27 +151,6 @@ export const SinglePost = ({ currentUser, setCurrentUser, checkingId }) => {
               setCurrentUser={setCurrentUser}
               postControls={data.controls}
             />
-            {/* // If the user is not logged in, he cannot write comments
-             {currentUser === "" ? null :   <CommentFields postIdFromSinglePost={postId} />}            
-              {commentLoading  && <LinearProgress/>}
-              {commentsExist ? (
-                comments.map((commentStuff) => {
-                  const { _id, body, postId } = commentStuff;
-                  return (
-                    <Comment
-                      key={_id}
-                      postControls={data.controls}
-                      commentId={_id}
-                      commentBody={body}
-                      postId={postId}
-                      arrayWithCommentsForPost={comments}
-                    />
-                  );
-                })
-              ) : (
-                <Box>
-                </Box>
-              )} */}
           </Box>
         </div>
       );

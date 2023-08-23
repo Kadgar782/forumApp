@@ -20,7 +20,6 @@ class productController {
   getProduct = async (req, res) => {
     try{
       const result = await Product.findOne({ _id: req.params.productID })
-      console.log(result)
       if (!result) {
         throw new Error('Product not found'); 
       }

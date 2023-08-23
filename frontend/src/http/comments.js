@@ -92,7 +92,6 @@ export const editCurrentComment = async (updatedComment) => {
   const token = localStorage.getItem("token");
   // make request to backend
   try {
-    console.log(updatedComment)
     const {  _id, title, body,} = updatedComment
     const response = await axios.put(
       `${API_URL}/api/comments/${_id}`,
