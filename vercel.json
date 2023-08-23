@@ -1,10 +1,10 @@
 {
     "rewrites":  [
-      {"source": "/(.*)", "destination": "/"},
-      { "src": "/editor", "dest": "/" },
-      { "src": "/:postId", "dest": "/" },
-      { "src": "/error/404", "dest": "/" },
-      { "src": "*", "dest": "/" }
+      {"source": "/", "destination": "/https://zap-five.vercel.app/"},
+      { "source": "/editor", "destination": "/https://zap-five.vercel.app/editor" },
+      { "source": "/:postId", "destination": "/https://zap-five.vercel.app/:postId" },
+      { "source": "/error/404", "destination": "/https://zap-five.vercel.app/error/404" },
+      { "source": "*", "destination": "/https://zap-five.vercel.app/error/404" }
     ]
   }
   
